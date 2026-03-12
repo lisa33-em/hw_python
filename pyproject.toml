@@ -33,6 +33,7 @@ include = ["**/*.py"]
 
 [tool.pyrefly]
 project-includes = ["**/*.py"]
+project-excludes = ["**/*.ipynb"]
 
 [dependency-groups]
 lint = [
