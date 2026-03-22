@@ -23,17 +23,17 @@ AMOUNT_KEY = "amount"
 DATE_KEY = "date"
 TYPE_KEY = "type"
 
-EXPENSE_CATEGORIES: tuple[Any, ...] = (
-    ("Food", ("Supermarket", "Restaurants", "FastFood", "Coffee", "Delivery")),
-    ("Transport", ("Taxi", "Public transport", "Gas", "Car service")),
-    ("Housing", ("Rent", "Utilities", "Repairs", "Furniture")),
-    ("Health", ("Pharmacy", "Doctors", "Dentist", "Lab tests")),
-    ("Entertainment", ("Movies", "Concerts", "Games", "Subscriptions")),
-    ("Clothing", ("Outerwear", "Casual", "Shoes", "Accessories")),
-    ("Education", ("Courses", "Books", "Tutors")),
-    ("Communications", ("Mobile", "Internet", "Subscriptions")),
-    ("Other", ()),
-)
+EXPENSE_CATEGORIES = {
+    "Food": ("Supermarket", "Restaurants", "FastFood", "Coffee", "Delivery"),
+    "Transport": ("Taxi", "Public transport", "Gas", "Car service"),
+    "Housing": ("Rent", "Utilities", "Repairs", "Furniture"),
+    "Health": ("Pharmacy", "Doctors", "Dentist", "Lab tests"),
+    "Entertainment": ("Movies", "Concerts", "Games", "Subscriptions"),
+    "Clothing": ("Outerwear", "Casual", "Shoes", "Accessories"),
+    "Education": ("Courses", "Books", "Tutors"),
+    "Communications": ("Mobile", "Internet", "Subscriptions"),
+    "Other": (),
+}
 CATEGORIES_COMMAND = "categories"
 
 financial_transactions_storage: list[dict[str, Any]] = []
@@ -82,8 +82,7 @@ def is_category(category: str) -> bool:
 
     first_part, second_part = parts
 
-    return any(cat_name == first_part and second_part in subcats
-               for cat_name, subcats in EXPENSE_CATEGORIES)
+    return first_part in EXPENSE_CATEGORIES and second_part in EXPENSE_CATEGORIES[first_part]
 
 
 def income_handler(amount: float, income_date: str) -> str:
@@ -102,16 +101,17 @@ def income_handler(amount: float, income_date: str) -> str:
 
 def cost_categories_handler() -> str:
     categories_available = []
-    for category, detailed_cats in EXPENSE_CATEGORIES:
-        categories_available.extend([f"{category}::{detailed_cat}" for detailed_cat in detailed_cats])
+    for category, detailed_cats in EXPENSE_CATEGORIES.items():
+        for detailed_cat in detailed_cats:
+            categories_available.append(f"{category}::{detailed_cat}")
     return "\n".join(categories_available)
 
 
-def expense_handler(category: str, amount: float, income_date: str) -> str:
+def cost_handler(category: str, amount: float, income_date: str) -> str:
     if category == CATEGORIES_COMMAND:
         return cost_categories_handler()
 
-    if not (is_category(category)):
+    if not is_category(category):
         return f"{NOT_EXISTS_CATEGORY}\nAvailable categories:\n{cost_categories_handler()}"
 
     if amount <= 0:
@@ -144,8 +144,7 @@ def monthly_statistics(income: float, expense: float) -> str:
     difference = income - expense
     if difference >= 0:
         return f"This month, the profit amounted to {difference:.2f} rubles."
-    difference *= -1
-    return f"This month, the loss amounted to {difference:.2f} rubles."
+    return f"This month, the loss amounted to {abs(difference):.2f} rubles."
 
 
 def stats_handler(date: str) -> str:
@@ -191,7 +190,7 @@ def calculate_stats_expense(
                 this_month_expense += operation[AMOUNT_KEY]
 
                 category = operation["category"]
-                categories[category] = categories.get(category, 0) + operation[AMOUNT_KEY]
+                categories[category] = categories.get(category, 0.0) + operation[AMOUNT_KEY]
 
     return total_expense, this_month_expense, categories
 
@@ -238,7 +237,7 @@ def handle_income_case(cmd_args: list[str]) -> str:
 def handle_cost_case(cmd_args: list[str]) -> str:
     if len(cmd_args) == LEN_FOUR:
         amount_str = cmd_args[2].replace(",", ".")
-        return expense_handler(cmd_args[1], float(amount_str), cmd_args[3])
+        return cost_handler(cmd_args[1], float(amount_str), cmd_args[3])
     if len(cmd_args) == LEN_TWO and cmd_args[1] == CATEGORIES_COMMAND:
         return cost_categories_handler()
     return UNKNOWN_COMMAND_MSG
