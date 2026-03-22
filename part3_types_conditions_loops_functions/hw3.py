@@ -111,7 +111,7 @@ def cost_handler(category: str, amount: float, income_date: str) -> str:
         return cost_categories_handler()
 
     if not is_category(category):
-        return f"{NOT_EXISTS_CATEGORY}\nAvailable categories:\n{cost_categories_handler()}"
+        return NOT_EXISTS_CATEGORY
 
     if amount <= 0:
         return NONPOSITIVE_VALUE_MSG
@@ -159,8 +159,8 @@ def stats_handler(date: str) -> str:
 
 
 def calculate_stats_income(stats_date: tuple[int, int, int]) -> tuple[float, float]:
-    total_income = 0
-    this_month_income = 0
+    total_income: float = 0
+    this_month_income: float = 0
 
     for operation in financial_transactions_storage:
         if operation[TYPE_KEY] == "income":
@@ -176,8 +176,8 @@ def calculate_stats_income(stats_date: tuple[int, int, int]) -> tuple[float, flo
 def calculate_stats_expense(
         stats_date: tuple[int, int, int]
 ) -> tuple[float, float, dict[str, float]]:
-    total_expense = 0
-    this_month_expense = 0
+    total_expense: float = 0
+    this_month_expense: float = 0
     categories: dict[str, float] = {}
 
     for operation in financial_transactions_storage:
