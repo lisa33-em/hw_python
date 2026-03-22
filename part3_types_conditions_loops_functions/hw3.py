@@ -189,7 +189,7 @@ def calculate_stats_expense(
                 this_month_expense += operation[AMOUNT_KEY]
 
                 category = operation["category"]
-                categories[category] = categories.get(category, 0.0) + operation[AMOUNT_KEY]
+                categories[category] = categories.get(category, 0) + operation[AMOUNT_KEY]
 
     return total_expense, this_month_expense, categories
 
