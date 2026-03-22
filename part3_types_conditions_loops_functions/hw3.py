@@ -87,11 +87,13 @@ def is_category(category: str) -> bool:
 
 def income_handler(amount: float, income_date: str) -> str:
     if amount <= 0:
+        financial_transactions_storage.append({})
         return NONPOSITIVE_VALUE_MSG
 
     date = extract_date(income_date)
 
     if date is None:
+        financial_transactions_storage.append({})
         return INCORRECT_DATE_MSG
 
     financial_transactions_storage.append({TYPE_KEY: "income", AMOUNT_KEY: amount, DATE_KEY: date})
@@ -111,14 +113,17 @@ def cost_handler(category: str, amount: float, income_date: str) -> str:
         return cost_categories_handler()
 
     if not is_category(category):
+        financial_transactions_storage.append({})
         return NOT_EXISTS_CATEGORY
 
     if amount <= 0:
+        financial_transactions_storage.append({})
         return NONPOSITIVE_VALUE_MSG
 
     date = extract_date(income_date)
 
     if date is None:
+        financial_transactions_storage.append({})
         return INCORRECT_DATE_MSG
 
     financial_transactions_storage.append({TYPE_KEY: "cost", "category": category, AMOUNT_KEY: amount, DATE_KEY: date})
