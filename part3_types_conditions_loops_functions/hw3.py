@@ -102,8 +102,7 @@ def income_handler(amount: float, income_date: str) -> str:
 def cost_categories_handler() -> str:
     categories_available = []
     for category, detailed_cats in EXPENSE_CATEGORIES.items():
-        for detailed_cat in detailed_cats:
-            categories_available.append(f"{category}::{detailed_cat}")
+        categories_available.extend([f"{category}::{detailed_cat}" for detailed_cat in detailed_cats])
     return "\n".join(categories_available)
 
 
