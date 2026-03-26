@@ -40,7 +40,7 @@ CATEGORIES_COMMAND = "categories"
 financial_transactions_storage: list[dict[str, Any]] = []
 
 
-def _is_leap_year(year: int) -> bool:
+def is_leap_year(year: int) -> bool:
     if year % 4 == 0 and year % 100 != 0:
         return True
     return year % 400 == 0
@@ -56,14 +56,14 @@ def _is_valid(day: int, month: int, year: int) -> bool:
         return False
 
     if month == FEBRUARY:
-        if _is_leap_year(year):
+        if is_leap_year(year):
             return day <= DAYS_TWENTY_NINE
         return day <= DAYS_TWENTY_EIGHT
 
     return True
 
 
-def _extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
+def extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
     splitted_date = maybe_dt.split("-")
     if len(splitted_date) != LEN_THREE:
         return None
@@ -110,12 +110,12 @@ def _is_category(category: str) -> bool:
     return first_part in EXPENSE_CATEGORIES and second_part in EXPENSE_CATEGORIES[first_part]
 
 
-def _income_handler(amount: float, income_date: str) -> str:
+def income_handler(amount: float, income_date: str) -> str:
     if amount <= 0:
         financial_transactions_storage.append({})
         return NONPOSITIVE_VALUE_MSG
 
-    date = _extract_date(income_date)
+    date = extract_date(income_date)
 
     if date is None:
         financial_transactions_storage.append({})
@@ -126,16 +126,16 @@ def _income_handler(amount: float, income_date: str) -> str:
     return OP_SUCCESS_MSG
 
 
-def _cost_categories_handler() -> str:
+def cost_categories_handler() -> str:
     categories_available = []
     for category, detailed_cats in EXPENSE_CATEGORIES.items():
         categories_available.extend([f"{category}::{detailed_cat}" for detailed_cat in detailed_cats])
     return "\n".join(categories_available)
 
 
-def _cost_handler(category: str, amount: float, income_date: str) -> str:
+def cost_handler(category: str, amount: float, income_date: str) -> str:
     if category == CATEGORIES_COMMAND:
-        return _cost_categories_handler()
+        return cost_categories_handler()
 
     if not _is_category(category):
         financial_transactions_storage.append({})
@@ -145,7 +145,7 @@ def _cost_handler(category: str, amount: float, income_date: str) -> str:
         financial_transactions_storage.append({})
         return NONPOSITIVE_VALUE_MSG
 
-    date = _extract_date(income_date)
+    date = extract_date(income_date)
 
     if date is None:
         financial_transactions_storage.append({})
@@ -156,16 +156,16 @@ def _cost_handler(category: str, amount: float, income_date: str) -> str:
     return OP_SUCCESS_MSG
 
 
-def _is_before(operation_date: tuple[int, int, int],
-              date: tuple[int, int, int]) -> bool:
-    op_day, op_month, op_year = operation_date
-    day, month, year = date
+def _is_before(op_date: tuple[int, int, int],
+               date: tuple[int, int, int]) -> bool:
+    op_date_reversed = (op_date[2], op_date[1], op_date[0])
+    date_reversed = (date[2], date[1], date[0])
 
-    return (op_year, op_month, op_day) <= (year, month, day)
+    return op_date_reversed <= date_reversed
 
 
 def _is_same_month(operation_date: tuple[int, int, int],
-                  date: tuple[int, int, int]) -> bool:
+                   date: tuple[int, int, int]) -> bool:
     months_equality = (operation_date[1] == date[1])
     years_equality = (operation_date[2] == date[2])
 
@@ -179,8 +179,8 @@ def _monthly_statistics(income: float, expense: float) -> str:
     return f"This month, the loss amounted to {abs(difference):.2f} rubles."
 
 
-def _stats_handler(date: str) -> str:
-    stats_date = _extract_date(date)
+def stats_handler(date: str) -> str:
+    stats_date = extract_date(date)
 
     if stats_date is None:
         return INCORRECT_DATE_MSG
@@ -228,7 +228,7 @@ def _calculate_stats_expense(
 
 
 def _create_statistics(date: str, income_data: tuple[float, float],
-                  expense_data: tuple[float, float, dict[str, float]]) -> str:
+                       expense_data: tuple[float, float, dict[str, float]]) -> str:
     difference = income_data[0] - expense_data[0]
     this_month_income = income_data[1]
     this_month_expense = expense_data[1]
@@ -255,7 +255,7 @@ def _category_stats_handler(answer: list[str], categories: dict[str, float]) -> 
         return answer
 
     for i, (category, category_sum) in enumerate(sorted_categories, 1):
-        answer.append(f"{i}. {category}: " + _format_category_sum(category_sum))
+        answer.append(f"{i}. {category}: {_format_category_sum(category_sum)}")
     return answer
 
 
@@ -275,7 +275,7 @@ def _handle_income_case(cmd_args: list[str]) -> str:
         if parsed_amount <= 0:
             return NONPOSITIVE_VALUE_MSG
 
-        return _income_handler(parsed_amount, cmd_args[2])
+        return income_handler(parsed_amount, cmd_args[2])
     return UNKNOWN_COMMAND_MSG
 
 
@@ -289,16 +289,16 @@ def _handle_cost_case(cmd_args: list[str]) -> str:
         if parsed_amount <= 0:
             return NONPOSITIVE_VALUE_MSG
 
-        return _cost_handler(cmd_args[1], parsed_amount, cmd_args[3])
+        return cost_handler(cmd_args[1], parsed_amount, cmd_args[3])
 
     if len(cmd_args) == LEN_TWO and cmd_args[1] == CATEGORIES_COMMAND:
-        return _cost_categories_handler()
+        return cost_categories_handler()
     return UNKNOWN_COMMAND_MSG
 
 
 def _handle_stats_case(cmd_args: list[str]) -> str:
     if len(cmd_args) == LEN_TWO:
-        return _stats_handler(cmd_args[1])
+        return stats_handler(cmd_args[1])
     return UNKNOWN_COMMAND_MSG
 
 
