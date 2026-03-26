@@ -51,7 +51,7 @@ def _is_valid(day: int, month: int, year: int) -> bool:
         return False
 
     if (month in MONTHS_THIRTY_ONE and not (1 <= day <= DAYS_THIRTY_ONE)) or (
-        month in MONTHS_THIRTY and not (1 <= day <= DAYS_THIRTY)
+            month in MONTHS_THIRTY and not (1 <= day <= DAYS_THIRTY)
     ):
         return False
 
@@ -156,14 +156,16 @@ def cost_handler(category: str, amount: float, income_date: str) -> str:
     return OP_SUCCESS_MSG
 
 
-def _is_before(op_date: tuple[int, int, int], date: tuple[int, int, int]) -> bool:
+def _is_before(op_date: tuple[int, int, int],
+               date: tuple[int, int, int]) -> bool:
     op_date_reversed = (op_date[2], op_date[1], op_date[0])
     date_reversed = (date[2], date[1], date[0])
 
     return op_date_reversed <= date_reversed
 
 
-def _is_same_month(operation_date: tuple[int, int, int], date: tuple[int, int, int]) -> bool:
+def _is_same_month(operation_date: tuple[int, int, int],
+                   date: tuple[int, int, int]) -> bool:
     months_equality = operation_date[1] == date[1]
     years_equality = operation_date[2] == date[2]
 
@@ -204,7 +206,8 @@ def _calculate_stats_income(stats_date: tuple[int, int, int]) -> tuple[float, fl
     return total_income, this_month_income
 
 
-def _calculate_stats_expense(stats_date: tuple[int, int, int]) -> tuple[float, float, dict[str, float]]:
+def _calculate_stats_expense(stats_date: tuple[int, int, int]
+                             ) -> tuple[float, float, dict[str, float]]:
     total_expense: float = 0
     this_month_expense: float = 0
     categories: dict[str, float] = {}
@@ -224,7 +227,8 @@ def _calculate_stats_expense(stats_date: tuple[int, int, int]) -> tuple[float, f
 
 
 def _create_statistics(
-    date: str, income_data: tuple[float, float], expense_data: tuple[float, float, dict[str, float]]
+        date: str, income_data: tuple[float, float],
+        expense_data: tuple[float, float, dict[str, float]]
 ) -> str:
     difference = income_data[0] - expense_data[0]
     this_month_income = income_data[1]
