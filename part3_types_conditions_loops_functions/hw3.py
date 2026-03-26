@@ -23,6 +23,9 @@ AMOUNT_KEY = "amount"
 DATE_KEY = "date"
 TYPE_KEY = "type"
 AVAILABLE_SYMBOLS = "0123456789."
+Date = tuple[int, int, int]
+IncomeStats = tuple[float, float]
+ExpenseStats = tuple[float, float, dict[str, float]]
 
 EXPENSE_CATEGORIES = {
     "Food": ("Supermarket", "Restaurants", "FastFood", "Coffee", "Delivery"),
@@ -51,7 +54,7 @@ def _is_valid(day: int, month: int, year: int) -> bool:
         return False
 
     if (month in MONTHS_THIRTY_ONE and not (1 <= day <= DAYS_THIRTY_ONE)) or (
-            month in MONTHS_THIRTY and not (1 <= day <= DAYS_THIRTY)
+        month in MONTHS_THIRTY and not (1 <= day <= DAYS_THIRTY)
     ):
         return False
 
@@ -63,7 +66,7 @@ def _is_valid(day: int, month: int, year: int) -> bool:
     return True
 
 
-def extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
+def extract_date(maybe_dt: str) -> Date | None:
     splitted_date = maybe_dt.split("-")
     if len(splitted_date) != LEN_THREE:
         return None
@@ -156,16 +159,14 @@ def cost_handler(category: str, amount: float, income_date: str) -> str:
     return OP_SUCCESS_MSG
 
 
-def _is_before(op_date: tuple[int, int, int],
-               date: tuple[int, int, int]) -> bool:
+def _is_before(op_date: Date, date: Date) -> bool:
     op_date_reversed = (op_date[2], op_date[1], op_date[0])
     date_reversed = (date[2], date[1], date[0])
 
     return op_date_reversed <= date_reversed
 
 
-def _is_same_month(operation_date: tuple[int, int, int],
-                   date: tuple[int, int, int]) -> bool:
+def _is_same_month(operation_date: Date, date: Date) -> bool:
     months_equality = operation_date[1] == date[1]
     years_equality = operation_date[2] == date[2]
 
@@ -191,7 +192,7 @@ def stats_handler(date: str) -> str:
     return _create_statistics(date, income_data, expense_data)
 
 
-def _calculate_stats_income(stats_date: tuple[int, int, int]) -> tuple[float, float]:
+def _calculate_stats_income(stats_date: Date) -> IncomeStats:
     total_income: float = 0
     this_month_income: float = 0
 
@@ -206,8 +207,7 @@ def _calculate_stats_income(stats_date: tuple[int, int, int]) -> tuple[float, fl
     return total_income, this_month_income
 
 
-def _calculate_stats_expense(stats_date: tuple[int, int, int]
-                             ) -> tuple[float, float, dict[str, float]]:
+def _calculate_stats_expense(stats_date: Date) -> ExpenseStats:
     total_expense: float = 0
     this_month_expense: float = 0
     categories: dict[str, float] = {}
@@ -226,10 +226,7 @@ def _calculate_stats_expense(stats_date: tuple[int, int, int]
     return total_expense, this_month_expense, categories
 
 
-def _create_statistics(
-        date: str, income_data: tuple[float, float],
-        expense_data: tuple[float, float, dict[str, float]]
-) -> str:
+def _create_statistics(date: str, income_data: IncomeStats, expense_data: ExpenseStats) -> str:
     difference = income_data[0] - expense_data[0]
     this_month_income = income_data[1]
     this_month_expense = expense_data[1]
