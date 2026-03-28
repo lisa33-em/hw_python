@@ -197,12 +197,11 @@ def _calculate_stats_income(stats_date: Date) -> IncomeStats:
     this_month_income: float = 0
 
     for operation in financial_transactions_storage:
-        if operation[TYPE_KEY] == "income":
+        if operation.get(TYPE_KEY) == "income":
             if _is_before(operation[DATE_KEY], stats_date):
                 total_income += operation[AMOUNT_KEY]
 
-            if _is_same_month(operation[DATE_KEY], stats_date) and\
-                _is_before(operation[DATE_KEY], stats_date):
+            if _is_same_month(operation[DATE_KEY], stats_date) and _is_before(operation[DATE_KEY], stats_date):
                 this_month_income += operation[AMOUNT_KEY]
 
     return total_income, this_month_income
@@ -214,12 +213,11 @@ def _calculate_stats_expense(stats_date: Date) -> ExpenseStats:
     categories: dict[str, float] = {}
 
     for operation in financial_transactions_storage:
-        if operation[TYPE_KEY] == "cost":
+        if operation.get(TYPE_KEY) == "cost":
             if _is_before(operation[DATE_KEY], stats_date):
                 total_expense += operation[AMOUNT_KEY]
 
-            if _is_same_month(operation[DATE_KEY], stats_date) and\
-                _is_before(operation[DATE_KEY], stats_date):
+            if _is_same_month(operation[DATE_KEY], stats_date) and _is_before(operation[DATE_KEY], stats_date):
                 this_month_expense += operation[AMOUNT_KEY]
 
                 category = operation["category"]
