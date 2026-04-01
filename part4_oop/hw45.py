@@ -76,7 +76,7 @@ class LRUPolicy(Policy[K]):
 
     @property
     def has_keys(self) -> bool:
-        return self._order != []
+        return len(self._order) != 0
 
 
 @dataclass
@@ -85,10 +85,10 @@ class LFUPolicy(Policy[K]):
     _key_counter: dict[K, int] = field(default_factory=dict, init=False)
 
     def register_access(self, key: K) -> None:
-        if key not in self._key_counter:
-            self._key_counter[key] = 1
-        else:
+        if key in self._key_counter:
             self._key_counter[key] += 1
+        else:
+            self._key_counter[key] = 1
 
     def get_key_to_evict(self) -> K | None:
         if len(self._key_counter) > self.capacity:
@@ -103,7 +103,7 @@ class LFUPolicy(Policy[K]):
 
     @property
     def has_keys(self) -> bool:
-        return self._key_counter != {}
+        return len(self._key_counter) != 0
 
 
 class MIPTCache(Cache[K, V]):
