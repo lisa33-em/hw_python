@@ -105,8 +105,8 @@ class LFUPolicy(Policy[K]):
 
 class MIPTCache(Cache[K, V]):
     def __init__(self, storage: Storage[K, V], policy: Policy[K]) -> None:
-        self.storage = storage
         self.policy = policy
+        self.storage = storage
 
     def set(self, key: K, value: V) -> None:
         self.storage.set(key, value)
