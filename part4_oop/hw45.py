@@ -109,13 +109,13 @@ class MIPTCache(Cache[K, V]):
         self.storage = storage
 
     def set(self, key: K, value: V) -> None:
-        self.storage.set(key, value)
         self.policy.register_access(key)
+        self.storage.set(key, value)
 
         key_to_evict = self.policy.get_key_to_evict()
         if key_to_evict:
-            self.storage.remove(key_to_evict)
             self.policy.remove_key(key_to_evict)
+            self.storage.remove(key_to_evict)
 
     def get(self, key: K) -> V | None:
         self.policy.register_access(key)
@@ -125,19 +125,19 @@ class MIPTCache(Cache[K, V]):
         return self.storage.exists(key)
 
     def remove(self, key: K) -> None:
-        self.storage.remove(key)
         self.policy.remove_key(key)
+        self.storage.remove(key)
 
     def clear(self) -> None:
-        self.storage.clear()
         self.policy.clear()
+        self.storage.clear()
 
 
 class CachedProperty[V]:
     def __init__(self, func: Callable[..., V]) -> None:
         self.func = func
 
-    def __get__(self, instance: HasCache[Any, Any] | None, owner: type) -> V:
+    def __get__(self, instance: HasCache[Any, Any] | None, owner: type) -> Any:
         if instance is None:
             return self
 
