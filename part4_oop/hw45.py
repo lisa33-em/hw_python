@@ -127,7 +127,7 @@ class MIPTCache(Cache[K, V]):
             self.storage.remove(key_to_evict)
 
     def get(self, key: K) -> V | None:
-        if key in self.storage:
+        if self.storage.exists(key):
             self.policy.register_access(key)
         return self.storage.get(key)
 
@@ -135,7 +135,7 @@ class MIPTCache(Cache[K, V]):
         return self.storage.exists(key)
 
     def remove(self, key: K) -> None:
-        if key in self.storage:
+        if self.storage.exists(key):
             self.policy.remove_key(key)
             self.storage.remove(key)
 
