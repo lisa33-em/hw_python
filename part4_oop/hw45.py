@@ -38,12 +38,13 @@ class FIFOPolicy(Policy[K]):
             self._order.append(key)
 
     def get_key_to_evict(self) -> K | None:
-        if len(self._order) >= self.capacity:
+        if len(self._order) > self.capacity:
             return self._order[0]
         return None
 
     def remove_key(self, key: K) -> None:
-        self._order.remove(key)
+        if key in self._order:
+            self._order.remove(key)
 
     def clear(self) -> None:
         self._order.clear()
@@ -64,12 +65,13 @@ class LRUPolicy(Policy[K]):
         self._order.append(key)
 
     def get_key_to_evict(self) -> K | None:
-        if len(self._order) >= self.capacity:
+        if len(self._order) > self.capacity:
             return self._order[0]
         return None
 
     def remove_key(self, key: K) -> None:
-        self._order.remove(key)
+        if key in self._order:
+            self._order.remove(key)
 
     def clear(self) -> None:
         self._order.clear()
@@ -90,7 +92,7 @@ class LFUPolicy(Policy[K]):
         self._last_added_key = key
 
     def get_key_to_evict(self) -> K | None:
-        if len(self._key_counter) >= self.capacity:
+        if len(self._key_counter) > self.capacity:
             keys_except_last_added = [x for x in self._key_counter if x != self._last_added_key]
 
             if len(keys_except_last_added) != 0:
@@ -120,20 +122,22 @@ class MIPTCache(Cache[K, V]):
         self.storage.set(key, value)
 
         key_to_evict = self.policy.get_key_to_evict()
-        if key_to_evict:
+        if key_to_evict is not None:
             self.policy.remove_key(key_to_evict)
             self.storage.remove(key_to_evict)
 
     def get(self, key: K) -> V | None:
-        self.policy.register_access(key)
+        if key in self.storage:
+            self.policy.register_access(key)
         return self.storage.get(key)
 
     def exists(self, key: K) -> bool:
         return self.storage.exists(key)
 
     def remove(self, key: K) -> None:
-        self.policy.remove_key(key)
-        self.storage.remove(key)
+        if key in self.storage:
+            self.policy.remove_key(key)
+            self.storage.remove(key)
 
     def clear(self) -> None:
         self.policy.clear()
