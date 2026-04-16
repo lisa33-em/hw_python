@@ -52,7 +52,10 @@ class CircuitBreaker:
         self.count = 0
         self.when_blocked: datetime | None = None
 
-    def __call__(self, func: CallableWithMeta[P, R_co]) -> CallableWithMeta[P, R_co]:
+    def __call__(
+        self,
+        func: CallableWithMeta[P, R_co],
+    ) -> CallableWithMeta[P, R_co]:
         self._func_name = f"{func.__module__}.{func.__name__}"
 
         @wraps(func)
