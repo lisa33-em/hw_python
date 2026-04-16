@@ -58,10 +58,7 @@ class CircuitBreaker:
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R_co:
             if self.when_blocked is not None:
-                if self.has_recovered():
-                    self.reset()
-                else:
-                    raise BreakerError(self._func_name, self.when_blocked)
+                self.examine_block()
 
             try:
                 result = func(*args, **kwargs)
@@ -75,6 +72,12 @@ class CircuitBreaker:
                 return result
 
         return wrapper
+
+    def examine_block(self) -> None:
+        if self.has_recovered():
+            self.reset()
+        else:
+            raise BreakerError(self._func_name, self.when_blocked)
 
     def has_recovered(self) -> bool:
         if self.when_blocked is None:
