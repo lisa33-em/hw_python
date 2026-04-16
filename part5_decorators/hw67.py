@@ -76,7 +76,7 @@ class CircuitBreaker:
     def examine_block(self) -> None:
         if self.has_recovered():
             self.reset()
-        else:
+        elif self.when_blocked is not None:
             raise BreakerError(self._func_name, self.when_blocked)
 
     def has_recovered(self) -> bool:
