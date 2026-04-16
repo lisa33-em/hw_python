@@ -78,6 +78,9 @@ class CircuitBreaker:
         return wrapper
 
     def has_recovered(self) -> bool:
+        if self.when_blocked is None:
+            return True
+
         current_time = datetime.now(timezone.UTC)
         when_blocked = self.when_blocked
 
