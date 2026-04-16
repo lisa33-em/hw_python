@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import wraps
 from typing import Any, ParamSpec, Protocol, TypeVar
 from urllib.request import urlopen
@@ -37,10 +37,10 @@ class CircuitBreaker:
     ):
         exceptions = []
 
-        if (critical_count <= 0 or not isinstance(critical_count, int)):
+        if critical_count <= 0 or not isinstance(critical_count, int):
             exceptions.append(ValueError(INVALID_CRITICAL_COUNT))
 
-        if (time_to_recover <= 0 or not isinstance(time_to_recover, int)):
+        if time_to_recover <= 0 or not isinstance(time_to_recover, int):
             exceptions.append(ValueError(INVALID_RECOVERY_TIME))
 
         if len(exceptions) > 0:
@@ -81,7 +81,7 @@ class CircuitBreaker:
         if self.when_blocked is None:
             return True
 
-        current_time = datetime.now(timezone.UTC)
+        current_time = datetime.now(UTC)
         when_blocked = self.when_blocked
 
         diff = (current_time - when_blocked).total_seconds()
@@ -91,8 +91,9 @@ class CircuitBreaker:
     def handle_error(self, error: Exception) -> None:
         self.count += 1
         if self.count >= self.critical_count:
-            self.when_blocked = datetime.now(timezone.UTC)
+            self.when_blocked = datetime.now(UTC)
             raise BreakerError(self._func_name, self.when_blocked) from error
+
 
 circuit_breaker = CircuitBreaker(5, 30, Exception)
 
