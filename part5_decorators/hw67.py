@@ -52,18 +52,14 @@ class CircuitBreaker:
         self.count = 0
         self.when_blocked: datetime | None = None
 
-    def __call__(
-        self,
-        func: CallableWithMeta[P, R_co],
-    ) -> CallableWithMeta[P, R_co]:
+    def __call__(self, func: CallableWithMeta[P, R_co]) -> CallableWithMeta[P, R_co]:
         self._func_name = f"{func.__module__}.{func.__name__}"
 
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R_co:
             if self.when_blocked is not None:
                 if self.has_recovered():
-                    self.count = 0
-                    self.when_blocked = None
+                    self.reset()
                 else:
                     raise BreakerError(self._func_name, self.when_blocked)
 
@@ -97,6 +93,9 @@ class CircuitBreaker:
             self.when_blocked = datetime.now(UTC)
             raise BreakerError(self._func_name, self.when_blocked) from error
 
+    def reset(self) -> None:
+        self.count = 0
+        self.when_blocked = None
 
 circuit_breaker = CircuitBreaker(5, 30, Exception)
 
