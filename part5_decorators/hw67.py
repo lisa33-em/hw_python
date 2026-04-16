@@ -97,6 +97,7 @@ class CircuitBreaker:
         self.count = 0
         self.when_blocked = None
 
+
 circuit_breaker = CircuitBreaker(5, 30, Exception)
 
 
