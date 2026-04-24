@@ -43,7 +43,7 @@ class CircuitBreaker:
         if isinstance(time_to_recover, bool) or not isinstance(time_to_recover, int) or time_to_recover <= 0:
             exceptions.append(ValueError(INVALID_RECOVERY_TIME))
 
-        if exceptions > 0:
+        if exceptions:
             raise ExceptionGroup(VALIDATIONS_FAILED, exceptions)
 
         self.critical_count = critical_count
