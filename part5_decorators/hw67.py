@@ -37,10 +37,10 @@ class CircuitBreaker:
     ):
         exceptions = []
 
-        if type(critical_count) is not int or critical_count <= 0:
+        if isinstance(critical_count, bool) or not isinstance(critical_count, int) or critical_count <= 0:
             exceptions.append(ValueError(INVALID_CRITICAL_COUNT))
 
-        if type(time_to_recover) is not int or time_to_recover <= 0:
+        if isinstance(time_to_recover, bool) or not isinstance(time_to_recover, int) or time_to_recover <= 0:
             exceptions.append(ValueError(INVALID_RECOVERY_TIME))
 
         if exceptions > 0:
