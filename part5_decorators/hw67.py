@@ -37,13 +37,13 @@ class CircuitBreaker:
     ):
         exceptions = []
 
-        if critical_count <= 0 or not isinstance(critical_count, int):
+        if type(critical_count) is not int or critical_count <= 0:
             exceptions.append(ValueError(INVALID_CRITICAL_COUNT))
 
-        if time_to_recover <= 0 or not isinstance(time_to_recover, int):
+        if type(time_to_recover) is not int or time_to_recover <= 0:
             exceptions.append(ValueError(INVALID_RECOVERY_TIME))
 
-        if len(exceptions) > 0:
+        if exceptions > 0:
             raise ExceptionGroup(VALIDATIONS_FAILED, exceptions)
 
         self.critical_count = critical_count
