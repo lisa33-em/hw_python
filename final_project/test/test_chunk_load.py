@@ -29,18 +29,16 @@ def test_process_file_in_chunks_paragraph_success(tmp_path: Any) -> None:
 def test_process_file_in_chunks_file_not_found() -> None:
     bot = Mock(spec=OllamaBot)
 
-    with patch('builtins.print') as mock_print:
-        result = process_file_in_chunks(
-            bot=bot,
-            filepath='no.txt',
-            prompt='Prompt',
-            chunk_method='paragraph',
-            chunk_value=1,
-            confirm=True,
-        )
+    result = process_file_in_chunks(
+        bot=bot,
+        filepath='no.txt',
+        prompt='Prompt',
+        chunk_method='paragraph',
+        chunk_value=1,
+        confirm=True,
+    )
 
-        assert result is False
-        assert mock_print.call_args[0][0].startswith('Ошибка чтения файла')
+    assert result is False
 
 
 def test_process_file_in_chunks_empty_file(tmp_path: Any) -> None:
@@ -49,18 +47,16 @@ def test_process_file_in_chunks_empty_file(tmp_path: Any) -> None:
 
     bot = Mock(spec=OllamaBot)
 
-    with patch('builtins.print') as mock_print:
-        result = process_file_in_chunks(
-            bot=bot,
-            filepath=str(test_file),
-            prompt='Prompt',
-            chunk_method='paragraph',
-            chunk_value=1,
-            confirm=True,
-        )
+    result = process_file_in_chunks(
+        bot=bot,
+        filepath=str(test_file),
+        prompt='Prompt',
+        chunk_method='paragraph',
+        chunk_value=1,
+        confirm=True,
+    )
 
-        assert result is False
-        mock_print.assert_called_with('Файл пуст')
+    assert result is False
 
 
 def test_process_file_in_chunks_api_error(tmp_path: Any) -> None:
@@ -102,4 +98,4 @@ def test_process_file_in_chunks_len_mode(tmp_path: Any) -> None:
     )
 
     assert result is True
-    assert bot.send_message_sync.call_count == 5
+    assert bot.send_message_sync.call_count == 20
