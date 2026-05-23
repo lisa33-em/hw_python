@@ -1,3 +1,4 @@
+import os
 import sys
 
 from src.config import Config
@@ -29,6 +30,7 @@ def main() -> int:
 
             if user_input == '/reset':
                 bot.reset()
+                os.system('cls' if os.name == 'nt' else 'clear')
                 print('Чат очищен')
                 continue
 
