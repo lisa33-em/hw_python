@@ -28,6 +28,10 @@ def process_file_in_chunks(
         try:
             response = bot.send_message_sync(full_message)
             print(response)
+
+            if not confirm and i < len(chunks):
+                input('Нажмите Enter для обработки следующего чанка')
+                
         except Exception as e:
             print(f'Ошибка при обработке чанка {i}: {e}')
             return False
