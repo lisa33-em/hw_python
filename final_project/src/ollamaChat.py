@@ -37,7 +37,7 @@ class OllamaBot:
                     full_response += content
                     yield content
 
-        self.history.append({'role': 'bot', 'content': full_response})
+        self.history.append({'role': 'assistant', 'content': full_response})
 
     def send_message_sync(self, message: str) -> str:
         self._check_limits()
@@ -59,12 +59,12 @@ class OllamaBot:
         )
 
         if isinstance(response, ChatCompletion):
-            bot_response: str = response.choices[0].message.content or ''
+            assistant_response: str = response.choices[0].message.content or ''
         else:
-            bot_response = ''
+            assistant_response = ''
 
-        self.history.append({'role': 'bot', 'content': bot_response})
-        return bot_response
+        self.history.append({'role': 'assistant', 'content': assistant_response})
+        return assistant_response
 
     def _check_limits(self) -> None:
         while len(self.history) > self.config.messages_limit:
