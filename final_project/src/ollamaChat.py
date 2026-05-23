@@ -15,7 +15,7 @@ class OllamaBot:
             message = message[: self.config.chars_limit]
 
         self.history.append({'role': 'user', 'content': message})
-        
+
         self._check_limits()
 
         messages: List[Dict[str, str]] = [
@@ -44,7 +44,7 @@ class OllamaBot:
             message = message[: self.config.chars_limit]
 
         self.history.append({'role': 'user', 'content': message})
-        
+
         self._check_limits()
 
         messages: List[Dict[str, str]] = [
