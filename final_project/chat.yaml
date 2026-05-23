@@ -1,0 +1,7 @@
+api_host: http://localhost:11434/v1/
+api_key: ollama
+limit_message: 30
+limit_chars: 2000
+temperature: 0.7
+system_prompt: "You are a helpful AI bot."
+model: gemma3:270m
