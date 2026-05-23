@@ -11,12 +11,12 @@ class OllamaBot:
         self.history: List[Dict[str, str]] = []
 
     def send_message_streaming(self, message: str) -> Iterator[str]:
-        self._check_limits()
-
         if len(message) > self.config.chars_limit:
             message = message[: self.config.chars_limit]
 
         self.history.append({'role': 'user', 'content': message})
+        
+        self._check_limits()
 
         messages: List[Dict[str, str]] = [
             {'role': 'system', 'content': self.config.system_message}
@@ -40,12 +40,12 @@ class OllamaBot:
         self.history.append({'role': 'assistant', 'content': full_response})
 
     def send_message_sync(self, message: str) -> str:
-        self._check_limits()
-
         if len(message) > self.config.chars_limit:
             message = message[: self.config.chars_limit]
 
         self.history.append({'role': 'user', 'content': message})
+        
+        self._check_limits()
 
         messages: List[Dict[str, str]] = [
             {'role': 'system', 'content': self.config.system_message}
