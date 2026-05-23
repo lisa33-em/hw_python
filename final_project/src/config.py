@@ -26,7 +26,7 @@ class Config:
         self.temperature = float(raw_temperature) if raw_temperature is not None else 0.7
 
         self.system_message = yaml_config.get('system_prompt')
-        self.model = 'gemma3:270m'
+        self.model = os.environ.get('MODEL') or yaml_config.get('model') or 'gemma3:270m'
 
         if not self.api_host or not self.api_key:
             raise ValueError(
